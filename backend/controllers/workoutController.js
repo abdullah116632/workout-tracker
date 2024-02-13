@@ -1,42 +1,44 @@
 const Workout = require("../models/workoutModel");
 const mongoose = require("mongoose");
 
-
 // create new workout
 const createWorkout = async (req, res) => {
   const { title, load, reps } = req.body;
 
   let emptyFields = [];
 
-  if(!title){
+  if (!title) {
     emptyFields.push("title");
   }
-  if(!load){
+  if (!load) {
     emptyFields.push("load");
   }
-  if(!reps){
+  if (!reps) {
     emptyFields.push("reps");
   }
-  if(emptyFields.length > 0){
-    return res.status(400).json({error: "Please fill in all the fields", emptyFields})
+  if (emptyFields.length > 0) {
+    return res
+      .status(400)
+      .json({ error: "Please fill in all the fields", emptyFields });
   }
 
   try {
-    const workout = await Workout.create({ title, load, reps });
+    const user_id = req.user._id;
+    const workout = await Workout.create({ title, load, reps, user_id });
     res.status(200).json(workout);
   } catch (error) {
     res.status(400).json({ error: error.message });
   }
 };
 
-
 // get all workout
 const getworkouts = async (req, res) => {
-  const workout = await Workout.find().sort({ createdAt: -1 });
+  const user_id = req.user._id;
+
+  const workout = await Workout.find({ user_id }).sort({ createdAt: -1 });
 
   res.status(200).json(workout);
 };
-
 
 // get a single workout
 const getWorkout = async (req, res) => {
@@ -55,7 +57,6 @@ const getWorkout = async (req, res) => {
   res.status(200).json(workout);
 };
 
-
 //Delete workout
 const deleteWorkout = async (req, res) => {
   const { id } = req.params;
@@ -72,7 +73,6 @@ const deleteWorkout = async (req, res) => {
 
   res.status(200).json(workout);
 };
-
 
 //update a workout
 const updateWorkout = async (req, res) => {
