@@ -2,13 +2,22 @@ require("dotenv").config();
 
 const express = require("express");
 const mongoose = require("mongoose");
+const cors = require("cors");
 const workoutRoutes = require("./routes/workouts");
 const userRoutes = require("./routes/user");
+
 
 // express app
 const app = express();
 
-// middleware
+app.use(
+  cors({
+    origin: process.env.FRONTEND_URL, // Replace with your frontend URL in production
+    methods: "GET,POST,PUT,DELETE",
+    allowedHeaders: "Content-Type,Authorization",
+  })
+);
+
 app.use(express.json());
 
 app.use((req, res, next) => {
@@ -31,5 +40,5 @@ mongoose
     });
   })
   .catch((err) => {
-    console.log(err);
+    console.log("db connection failed", err);
   });
